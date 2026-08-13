@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MedEmbed on AKS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #e7f0eb;
+      --bg-panel: rgba(255, 255, 255, 0.72);
+      --ink: #12241c;
+      --muted: #4d6358;
+      --accent: #0d6b4c;
+      --accent-soft: #b7e0cc;
+      --line: rgba(18, 36, 28, 0.12);
+      --warn: #8a5a12;
+      --code-bg: #f4faf7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      color: var(--ink);
+      font-family: "Source Sans 3", system-ui, sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 90% 70% at 0% 0%, rgba(13, 107, 76, 0.14), transparent 55%),
+        radial-gradient(ellipse 70% 60% at 100% 100%, rgba(45, 122, 90, 0.12), transparent 50%),
+        repeating-linear-gradient(
+          -18deg,
+          transparent,
+          transparent 22px,
+          rgba(13, 107, 76, 0.03) 22px,
+          rgba(13, 107, 76, 0.03) 23px
+        );
+    }
+
+    .deck {
+      height: 100%;
+      width: 100%;
+      position: relative;
+    }
+
+    .slide {
+      display: none;
+      height: 100%;
+      padding: clamp(2rem, 5vw, 4rem) clamp(2rem, 6vw, 5rem) 4.5rem;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.15rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      animation: rise 320ms ease;
+    }
+
+    .slide.active { display: flex; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-size: 0.82rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(2.3rem, 5.2vw, 3.7rem);
+      line-height: 1.08;
+      max-width: 14ch;
+      color: var(--ink);
+    }
+
+    h2 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(1.75rem, 3.4vw, 2.55rem);
+      line-height: 1.12;
+    }
+
+    .lede {
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      color: var(--muted);
+      max-width: 42rem;
+      line-height: 1.5;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.35rem;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--bg-panel);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.9rem;
+      backdrop-filter: blur(6px);
+    }
+
+    ul {
+      list-style: none;
+      display: grid;
+      gap: 0.7rem;
+      max-width: 46rem;
+    }
+
+    ul li {
+      position: relative;
+      padding-left: 1.25rem;
+      line-height: 1.45;
+      font-size: 1.08rem;
+    }
+
+    ul li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 0.5rem;
+      height: 0.5rem;
+      background: var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+      max-width: 52rem;
+      background: var(--bg-panel);
+      backdrop-filter: blur(6px);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(13, 107, 76, 0.06);
+    }
+
+    code, td code {
+      font-family: "Source Code Pro", ui-monospace, monospace;
+      font-size: 0.9em;
+      color: var(--accent);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--line);
+      padding: 1rem 1.15rem;
+      overflow-x: auto;
+      font-family: "Source Code Pro", ui-monospace, monospace;
+      font-size: clamp(0.78rem, 1.4vw, 0.95rem);
+      line-height: 1.5;
+      max-width: 52rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    .arch {
+      display: grid;
+      gap: 0.45rem;
+      max-width: 38rem;
+      font-family: "Source Code Pro", ui-monospace, monospace;
+      font-size: clamp(0.82rem, 1.45vw, 0.98rem);
+    }
+
+    .arch .box {
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      padding: 0.7rem 1rem;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      transition: transform 200ms ease, border-color 200ms ease;
+    }
+
+    .slide.active .arch .box {
+      animation: pop 420ms ease both;
+    }
+
+    .slide.active .arch .box:nth-child(1) { animation-delay: 40ms; }
+    .slide.active .arch .box:nth-child(3) { animation-delay: 100ms; }
+    .slide.active .arch .box:nth-child(5) { animation-delay: 160ms; }
+    .slide.active .arch .box:nth-child(7) { animation-delay: 220ms; }
+    .slide.active .arch .box:nth-child(9) { animation-delay: 280ms; }
+
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .arch .arrow {
+      text-align: center;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      max-width: 52rem;
+      align-items: start;
+    }
+
+    @media (max-width: 800px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      padding: 1rem 1.15rem;
+      backdrop-filter: blur(6px);
+    }
+
+    .panel h3 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.12rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .panel p, .panel li {
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    .footer-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.5rem;
+      background: linear-gradient(transparent, rgba(231, 240, 235, 0.95));
+      font-size: 0.85rem;
+      color: var(--muted);
+      z-index: 10;
+    }
+
+    .nav-btns { display: flex; gap: 0.5rem; }
+
+    button {
+      font: inherit;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--line);
+      padding: 0.4rem 0.85rem;
+      cursor: pointer;
+      transition: border-color 150ms ease, color 150ms ease;
+    }
+
+    button:hover { border-color: var(--accent); color: var(--accent); }
+    button:disabled { opacity: 0.35; cursor: default; }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      transition: width 200ms ease;
+      z-index: 20;
+    }
+
+    kbd {
+      font-family: "Source Code Pro", monospace;
+      font-size: 0.8em;
+      border: 1px solid var(--line);
+      padding: 0.1rem 0.35rem;
+      background: #fff;
+    }
+
+    .note {
+      color: var(--warn);
+      font-size: 0.95rem;
+      max-width: 46rem;
+    }
+
+    .brand-mark {
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(3rem, 8vw, 5rem);
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="deck" id="deck">
+
+    <section class="slide active" data-title="Title">
+      <p class="brand-mark">MedEmbed</p>
+      <p class="eyebrow">AKS deployment walkthrough</p>
+      <h1>How we deployed medical embeddings on AKS</h1>
+      <p class="lede">Self-hosted clinical text embeddings with Hugging Face TEI, ClusterIP, and Istio — no GPU node pool required.</p>
+      <div class="meta">
+        <span class="chip">abhinand/MedEmbed-base-v0.1</span>
+        <span class="chip">TEI cpu-1.9</span>
+        <span class="chip">CPU · ClusterIP</span>
+        <span class="chip">Istio /medembed/</span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="What">
+      <p class="eyebrow">01 · Scope</p>
+      <h2>What we deployed</h2>
+      <p class="lede">A medical-domain embedding service for clinical and biomedical text — similarity, retrieval, and OpenAI-style clients.</p>
+      <table>
+        <thead><tr><th>Piece</th><th>Choice</th></tr></thead>
+        <tbody>
+          <tr><td>Model</td><td><code>abhinand/MedEmbed-base-v0.1</code></td></tr>
+          <tr><td>Runtime</td><td>Hugging Face Text Embeddings Inference (TEI)</td></tr>
+          <tr><td>Image</td><td><code>ghcr.io/huggingface/text-embeddings-inference:cpu-1.9</code></td></tr>
+          <tr><td>Compute</td><td>CPU only — no GPU node pool</td></tr>
+          <tr><td>Platform</td><td>AKS</td></tr>
+          <tr><td>Exposure</td><td>ClusterIP + optional Istio VirtualService</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="slide" data-title="Why">
+      <p class="eyebrow">02 · Design choices</p>
+      <h2>Why this shape</h2>
+      <ul>
+        <li><strong>Self-hosted</strong> — clinical text stays inside the cluster</li>
+        <li><strong>TEI</strong> — production embedding server with native and OpenAI-compatible APIs</li>
+        <li><strong>CPU first</strong> — no GPU pool required for this model footprint</li>
+        <li><strong>Shared recipe</strong> — same packaging as <code>bge-small</code> and <code>vexyl-stt</code></li>
+      </ul>
+    </section>
+
+    <section class="slide" data-title="Architecture">
+      <p class="eyebrow">03 · Architecture</p>
+      <h2>Request path</h2>
+      <div class="arch">
+        <div class="box">Client / mesh gateway</div>
+        <div class="arrow">▼</div>
+        <div class="box">Istio VirtualService — prefix <code>/medembed/</code> → rewrite <code>/</code></div>
+        <div class="arrow">▼</div>
+        <div class="box">Service <code>medembed.medembed.svc.cluster.local:80</code></div>
+        <div class="arrow">▼</div>
+        <div class="box">Deployment <code>medembed</code> — TEI container</div>
+        <div class="arrow">▼</div>
+        <div class="box">Model cache — <code>emptyDir</code> at <code>/data</code></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Manifests">
+      <p class="eyebrow">04 · Repo layout</p>
+      <h2>Manifests we ship</h2>
+      <pre>medembed/
+├── namespace.yaml              # medembed namespace
+├── deployment.yaml            # TEI + probes + resources
+├── service.yaml               # ClusterIP :80
+├── virtualservice-route.yaml  # Istio route snippet (paste-in)
+└── README.md</pre>
+      <p class="note">Apply Namespace → Deployment → Service. Paste the Istio route into the existing VirtualService — do not apply the snippet alone.</p>
+    </section>
+
+    <section class="slide" data-title="Workload">
+      <p class="eyebrow">05 · Workload</p>
+      <h2>Deployment highlights</h2>
+      <table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Replicas</td><td><code>1</code></td></tr>
+          <tr><td>Model</td><td><code>--model-id abhinand/MedEmbed-base-v0.1</code></td></tr>
+          <tr><td>Port</td><td><code>80</code></td></tr>
+          <tr><td>Cache</td><td><code>/data</code> on <code>emptyDir</code></td></tr>
+          <tr><td>Threads</td><td><code>OMP</code> / <code>MKL</code> / <code>RAYON</code> = 4</td></tr>
+          <tr><td>Requests</td><td><strong>2 CPU · 4Gi</strong></td></tr>
+          <tr><td>Limits</td><td><strong>4 CPU · 8Gi</strong></td></tr>
+          <tr><td>Probes</td><td><code>GET /health</code> with long startup window</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="slide" data-title="Deploy">
+      <p class="eyebrow">06 · Rollout</p>
+      <h2>Deploy steps</h2>
+      <pre>kubectl apply \
+  -f medembed/namespace.yaml \
+  -f medembed/deployment.yaml \
+  -f medembed/service.yaml
+
+kubectl -n medembed rollout status deploy/medembed</pre>
+      <ul>
+        <li>First boot downloads weights from Hugging Face — can take several minutes</li>
+        <li>ONNX 404 warnings on CPU are expected; TEI falls back to Candle + safetensors</li>
+        <li>Needs cluster egress to <code>huggingface.co</code> on cold start</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-title="Istio">
+      <p class="eyebrow">07 · Mesh exposure</p>
+      <h2>Istio VirtualService route</h2>
+      <pre>- match:
+    - uri:
+        prefix: /medembed/
+  rewrite:
+    uri: /
+  route:
+    - destination:
+        host: medembed.medembed.svc.cluster.local
+        port:
+          number: 80</pre>
+      <p class="lede">Gateway clients keep the <code>/medembed/</code> prefix; Istio rewrites to TEI’s native paths.</p>
+    </section>
+
+    <section class="slide" data-title="APIs">
+      <p class="eyebrow">08 · APIs</p>
+      <h2>What clients call</h2>
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>POST</td><td><code>/medembed/embed</code></td><td>TEI native embeddings</td></tr>
+          <tr><td>POST</td><td><code>/medembed/v1/embeddings</code></td><td>OpenAI-compatible</td></tr>
+          <tr><td>GET</td><td><code>/medembed/health</code></td><td>Readiness / health</td></tr>
+        </tbody>
+      </table>
+      <div class="two-col" style="margin-top:1rem">
+        <div class="panel">
+          <h3>Native</h3>
+          <p><code>{"inputs":"patient with chest pain..."}</code></p>
+        </div>
+        <div class="panel">
+          <h3>OpenAI-style</h3>
+          <p><code>{"input":"...","model":"abhinand/MedEmbed-base-v0.1"}</code></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Smoke test">
+      <p class="eyebrow">09 · Verify</p>
+      <h2>In-cluster smoke test</h2>
+      <pre>kubectl -n medembed run curl --rm -it --image=curlimages/curl -- \
+  curl -s http://medembed.medembed.svc.cluster.local/embed \
+  -H 'Content-Type: application/json' \
+  -d '{"inputs":"patient with chest pain and elevated troponin"}'</pre>
+      <p class="lede">Validates DNS, Service, and TEI before depending on the gateway path.</p>
+    </section>
+
+    <section class="slide" data-title="Ops">
+      <p class="eyebrow">10 · Operations</p>
+      <h2>Prerequisites &amp; caveats</h2>
+      <div class="two-col">
+        <div class="panel">
+          <h3>Need</h3>
+          <ul>
+            <li style="padding-left:1.1rem"><code>kubectl</code> for the AKS cluster</li>
+            <li style="padding-left:1.1rem">Node capacity: 2–4 CPU, 4–8Gi</li>
+            <li style="padding-left:1.1rem">Egress to Hugging Face on first start</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Watch</h3>
+          <ul>
+            <li style="padding-left:1.1rem"><code>emptyDir</code> cache is lost on pod recreate</li>
+            <li style="padding-left:1.1rem">Pending / CrashLoop → egress or capacity</li>
+            <li style="padding-left:1.1rem">PVC or baked image if cold starts hurt</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Siblings">
+      <p class="eyebrow">11 · Pattern</p>
+      <h2>Same recipe across ML services</h2>
+      <table>
+        <thead><tr><th>Service</th><th>Stack</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><strong>medembed</strong></td><td>MedEmbed-base + TEI</td><td>Medical embeddings</td></tr>
+          <tr><td>bge-small</td><td>BGE-small-en + TEI</td><td>General embeddings</td></tr>
+          <tr><td>vexyl-stt</td><td>IndicConformer + VEXYL</td><td>Speech-to-text</td></tr>
+        </tbody>
+      </table>
+      <p class="lede">Reusable packaging: Namespace + Deployment + ClusterIP + Istio prefix rewrite.</p>
+    </section>
+
+    <section class="slide" data-title="Takeaways">
+      <p class="eyebrow">12 · Summary</p>
+      <h2>Takeaways</h2>
+      <ul>
+        <li>MedEmbed runs as <strong>TEI on AKS CPU</strong> — no GPU required for this footprint</li>
+        <li><strong>ClusterIP + Istio</strong> keeps exposure behind the existing mesh gateway</li>
+        <li><strong>Probes tolerate cold start</strong> while Hugging Face weights download</li>
+        <li><strong>Same layout as sibling ML services</strong> — easy to operate and extend</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-title="End">
+      <p class="brand-mark">MedEmbed</p>
+      <p class="eyebrow">Thank you</p>
+      <h1>Questions?</h1>
+      <div class="meta">
+        <span class="chip">Repo: medembed/</span>
+        <span class="chip">DNS: medembed.medembed.svc.cluster.local</span>
+        <span class="chip">Gateway: /medembed/</span>
+      </div>
+      <p class="lede" style="margin-top:1rem">Navigate with <kbd>←</kbd> <kbd>→</kbd> or the buttons below. Press <kbd>F</kbd> for fullscreen.</p>
+    </section>
+  </div>
+
+  <div class="footer-bar">
+    <span id="counter">1 / 1</span>
+    <div class="nav-btns">
+      <button type="button" id="prev" aria-label="Previous slide">← Prev</button>
+      <button type="button" id="next" aria-label="Next slide">Next →</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const progress = document.getElementById("progress");
+    const counter = document.getElementById("counter");
+    const prevBtn = document.getElementById("prev");
+    const nextBtn = document.getElementById("next");
+    let i = 0;
+
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      counter.textContent = `${i + 1} / ${slides.length}`;
+      progress.style.width = `${((i + 1) / slides.length) * 100}%`;
+      prevBtn.disabled = i === 0;
+      nextBtn.disabled = i === slides.length - 1;
+      history.replaceState(null, "", `#${i + 1}`);
+    }
+
+    prevBtn.addEventListener("click", () => show(i - 1));
+    nextBtn.addEventListener("click", () => show(i + 1));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault();
+        show(i + 1);
+      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        show(i - 1);
+      } else if (e.key === "Home") {
+        show(0);
+      } else if (e.key === "End") {
+        show(slides.length - 1);
+      } else if (e.key === "f" || e.key === "F") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+
+    const hash = parseInt(location.hash.replace("#", ""), 10);
+    show(Number.isFinite(hash) && hash > 0 ? hash - 1 : 0);
+  </script>
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 Serves [`abhinand/MedEmbed-base-v0.1`](https://huggingface.co/abhinand/MedEmbed-base-v0.1) with [Hugging Face Text Embeddings Inference (TEI)](https://github.com/huggingface/text-embeddings-inference) on CPU. The API is reachable inside the cluster via ClusterIP, and can be exposed through an Istio VirtualService route.
 
+**Present this deployment:** open [`presentation.html`](presentation.html) in a browser (arrow keys / buttons to navigate), or use [`PRESENTATION.md`](PRESENTATION.md) with [Marp](https://marp.app/).
+
 Sibling services in this repo:
 
 - [`bge-small/`](../bge-small/) — `BAAI/bge-small-en-v1.5` (TEI embeddings)
