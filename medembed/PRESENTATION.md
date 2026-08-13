@@ -24,17 +24,19 @@ style: |
 
 <!-- _class: lead -->
 
-# MedEmbed on AKS
+# MedEmbed
 
-### Medical text embeddings, self-hosted on Kubernetes
+## How we deployed medical embeddings on AKS
 
-`abhinand/MedEmbed-base-v0.1` · Hugging Face TEI · CPU · ClusterIP + Istio
+Self-hosted clinical text embeddings with Hugging Face TEI · CPU · ClusterIP + Istio
+
+`abhinand/MedEmbed-base-v0.1`
 
 ---
 
 ## What we deployed
 
-**MedEmbed** — a medical-domain embedding model for clinical / biomedical text similarity and retrieval.
+A medical-domain embedding service for clinical / biomedical text similarity and retrieval.
 
 | Piece | Choice |
 |---|---|
