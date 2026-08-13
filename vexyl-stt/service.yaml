@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vexyl-stt
+  namespace: vexyl-stt
+  labels:
+    app.kubernetes.io/name: vexyl-stt
+    app.kubernetes.io/component: speech-to-text
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: vexyl-stt
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

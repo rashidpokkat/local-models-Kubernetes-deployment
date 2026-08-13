@@ -1,0 +1,22 @@
+# Istio VirtualService HTTP route snippet for VEXYL-STT.
+# Paste this entry into your existing VirtualService `http:` list.
+# Do not `kubectl apply` this file on its own — it is not a full resource.
+#
+# Clients (keep the trailing slash on the prefix):
+#   GET  /vexyl-stt/health
+#   POST /vexyl-stt/batch/transcribe
+#   WS   /vexyl-stt/  (WebSocket streaming)
+#
+# For long-lived WebSocket sessions, consider adding timeout: 3600s on this route.
+
+- match:
+    - uri:
+        prefix: /vexyl-stt/
+  rewrite:
+    uri: /
+  timeout: 3600s
+  route:
+    - destination:
+        host: vexyl-stt.vexyl-stt.svc.cluster.local
+        port:
+          number: 80

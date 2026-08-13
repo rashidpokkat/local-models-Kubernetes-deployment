@@ -1,0 +1,19 @@
+# Istio VirtualService HTTP route snippet for MedEmbed.
+# Paste this entry into your existing VirtualService `http:` list.
+# Do not `kubectl apply` this file on its own — it is not a full resource.
+#
+# Clients (keep the trailing slash on the prefix):
+#   POST /medembed/embed
+#   POST /medembed/v1/embeddings
+#   GET  /medembed/health
+
+- match:
+    - uri:
+        prefix: /medembed/
+  rewrite:
+    uri: /
+  route:
+    - destination:
+        host: medembed.medembed.svc.cluster.local
+        port:
+          number: 80

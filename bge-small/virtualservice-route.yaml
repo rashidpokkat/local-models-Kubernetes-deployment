@@ -1,0 +1,20 @@
+# Istio VirtualService HTTP route snippet for bge-small.
+# Paste this entry into your existing VirtualService `http:` list.
+# Do not `kubectl apply` this file on its own — it is not a full resource.
+#
+# Clients (keep the trailing slash on the prefix):
+#   POST /bge-small/embed
+#   POST /bge-small/v1/embeddings
+#   GET  /bge-small/health
+#   GET  /bge-small/info
+
+- match:
+    - uri:
+        prefix: /bge-small/
+  rewrite:
+    uri: /
+  route:
+    - destination:
+        host: bge-small.bge-small.svc.cluster.local
+        port:
+          number: 80
