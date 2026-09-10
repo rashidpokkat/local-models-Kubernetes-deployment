@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gemma
+  namespace: gemma
+  labels:
+    app.kubernetes.io/name: gemma
+    app.kubernetes.io/component: text-generation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gemma
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gemma
+        app.kubernetes.io/component: text-generation
+    spec:
+      # Uncomment if your AKS GPU pool uses a dedicated label/taint.
+      # nodeSelector:
+      #   accelerator: nvidia
+      # tolerations:
+      #   - key: sku
+      #     operator: Equal
+      #     value: gpu
+      #     effect: NoSchedule
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.29.0
+          args:
+            - --model
+            - google/gemma-2-2b-it
+            - --host
+            - 0.0.0.0
+            - --port
+            - "80"
+            - --max-model-len
+            - "4096"
+            - --gpu-memory-utilization
+            - "0.90"
+            - --trust-remote-code
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: HUGGING_FACE_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+            - name: HF_HOME
+              value: /data
+          volumeMounts:
+            - name: model-cache
+              mountPath: /data
+            - name: dshm
+              mountPath: /dev/shm
+          resources:
+            requests:
+              cpu: "2"
+              memory: 12Gi
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "4"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 180
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 120
+      volumes:
+        - name: model-cache
+          emptyDir: {}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi

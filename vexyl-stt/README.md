@@ -1,6 +1,6 @@
 # VEXYL-STT on AKS (CPU, ClusterIP)
 
-Self-hosted speech-to-text using [VEXYL-STT](https://github.com/vexyl-ai/vexyl-stt) wrapping [`ai4bharat/indic-conformer-600m-multilingual`](https://huggingface.co/ai4bharat/indic-conformer-600m-multilingual) (600M). Sibling to [`medembed/`](../medembed/) and [`bge-small/`](../bge-small/).
+Self-hosted speech-to-text using [VEXYL-STT](https://github.com/vexyl-ai/vexyl-stt) wrapping [`ai4bharat/indic-conformer-600m-multilingual`](https://huggingface.co/ai4bharat/indic-conformer-600m-multilingual) (600M). Sibling to [`medembed/`](../medembed/), [`bge-small/`](../bge-small/), and [`gemma/`](../gemma/).
 
 Provides **WebSocket streaming** and **REST batch** transcription on one port.
 

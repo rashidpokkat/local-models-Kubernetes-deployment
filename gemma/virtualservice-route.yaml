@@ -1,0 +1,21 @@
+# Istio VirtualService HTTP route snippet for Gemma (vLLM).
+# Paste this entry into your existing VirtualService `http:` list.
+# Do not `kubectl apply` this file on its own — it is not a full resource.
+#
+# Clients (keep the trailing slash on the prefix):
+#   POST /gemma/v1/chat/completions
+#   POST /gemma/v1/completions
+#   GET  /gemma/v1/models
+#   GET  /gemma/health
+
+- match:
+    - uri:
+        prefix: /gemma/
+  rewrite:
+    uri: /
+  timeout: 300s
+  route:
+    - destination:
+        host: gemma.gemma.svc.cluster.local
+        port:
+          number: 80
