@@ -8,6 +8,7 @@ Sibling services in this repo:
 
 - [`bge-small/`](../bge-small/) — `BAAI/bge-small-en-v1.5` (TEI embeddings)
 - [`vexyl-stt/`](../vexyl-stt/) — VEXYL-STT + IndicConformer 600M (WebSocket + REST STT)
+- [`gemma/`](../gemma/) — `google/gemma-2-2b-it` SLM (TGI, GPU)
 
 ## Prerequisites
 

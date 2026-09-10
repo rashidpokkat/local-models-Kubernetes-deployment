@@ -355,7 +355,7 @@
         <li><strong>Self-hosted</strong> — clinical text stays inside the cluster</li>
         <li><strong>TEI</strong> — production embedding server with native and OpenAI-compatible APIs</li>
         <li><strong>CPU first</strong> — no GPU pool required for this model footprint</li>
-        <li><strong>Shared recipe</strong> — same packaging as <code>bge-small</code> and <code>vexyl-stt</code></li>
+        <li><strong>Shared recipe</strong> — same packaging as <code>bge-small</code>, <code>vexyl-stt</code>, and <code>gemma</code></li>
       </ul>
     </section>
 
@@ -502,6 +502,7 @@ kubectl -n medembed rollout status deploy/medembed</pre>
           <tr><td><strong>medembed</strong></td><td>MedEmbed-base + TEI</td><td>Medical embeddings</td></tr>
           <tr><td>bge-small</td><td>BGE-small-en + TEI</td><td>General embeddings</td></tr>
           <tr><td>vexyl-stt</td><td>IndicConformer + VEXYL</td><td>Speech-to-text</td></tr>
+          <tr><td>gemma</td><td>Gemma 2 2B + vLLM</td><td>SLM chat / completion</td></tr>
         </tbody>
       </table>
       <p class="lede">Reusable packaging: Namespace + Deployment + ClusterIP + Istio prefix rewrite.</p>

@@ -54,7 +54,7 @@ A medical-domain embedding service for clinical / biomedical text similarity and
 - **Self-hosted** — keep clinical text inside the cluster
 - **TEI** — production embedding server (native + OpenAI-compatible APIs)
 - **CPU first** — no GPU node pool required for this model size
-- **Same pattern** as sibling services (`bge-small`, `vexyl-stt`)
+- **Same pattern** as sibling services (`bge-small`, `vexyl-stt`, `gemma`)
 
 ---
 
@@ -226,6 +226,7 @@ Same AKS packaging style across the repo:
 | **medembed** | MedEmbed-base + TEI | Medical embeddings |
 | **bge-small** | BGE-small-en + TEI | General embeddings |
 | **vexyl-stt** | IndicConformer + VEXYL | Speech-to-text |
+| **gemma** | Gemma 2 2B + vLLM | SLM chat / completion |
 
 Reusable recipe: Namespace + Deployment + ClusterIP + Istio prefix rewrite.
 

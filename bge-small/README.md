@@ -1,6 +1,6 @@
 # BGE-small on AKS (CPU, ClusterIP)
 
-Serves [`BAAI/bge-small-en-v1.5`](https://huggingface.co/BAAI/bge-small-en-v1.5) with [Hugging Face Text Embeddings Inference (TEI)](https://github.com/huggingface/text-embeddings-inference) on CPU. Sibling to [`medembed/`](../medembed/) and [`vexyl-stt/`](../vexyl-stt/).
+Serves [`BAAI/bge-small-en-v1.5`](https://huggingface.co/BAAI/bge-small-en-v1.5) with [Hugging Face Text Embeddings Inference (TEI)](https://github.com/huggingface/text-embeddings-inference) on CPU. Sibling to [`medembed/`](../medembed/), [`vexyl-stt/`](../vexyl-stt/), and [`gemma/`](../gemma/).
 
 ## Prerequisites
 

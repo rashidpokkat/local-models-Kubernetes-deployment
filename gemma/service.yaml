@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gemma
+  namespace: gemma
+  labels:
+    app.kubernetes.io/name: gemma
+    app.kubernetes.io/component: text-generation
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: gemma
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
